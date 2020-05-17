@@ -129,6 +129,9 @@ func main() {
 		cli.BoolFlag{
 			Name:  "cpu-prof, p",
 			Usage: "Generate CPU profile"},
+		cli.StringFlag{
+			Name:  "listen",
+			Usage: "Listen on address"},
 	}
 	app.Usage = "ProtonMail IMAP and SMTP Bridge"
 	app.Action = run
@@ -275,6 +278,10 @@ func run(context *cli.Context) (contextError error) { // nolint[funlen]
 
 	pmapiClientFactory := pmapifactory.New(cfg, eventListener)
 
+	if context.GlobalString("listen") != "" {
+		log.Info("Listening on ", context.GlobalString("listen"))
+		bridge.Host = context.GlobalString("listen")
+	}
 	bridgeInstance := bridge.New(cfg, pref, panicHandler, eventListener, Version, pmapiClientFactory, credentialsStore)
 	imapBackend := imap.NewIMAPBackend(panicHandler, eventListener, cfg, bridgeInstance)
 	smtpBackend := smtp.NewSMTPBackend(panicHandler, eventListener, pref, bridgeInstance)

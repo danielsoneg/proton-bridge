@@ -18,6 +18,6 @@
 package bridge
 
 // Host settings.
-const (
+var (
 	Host = "127.0.0.1"
 )
